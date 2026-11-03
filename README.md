@@ -4,74 +4,461 @@
 
 ## Description
 
-**NetPractice** is a networking project from the **42 curriculum**. Its goal is to build an understanding of TCP/IP networking by fixing the configurations of small simulated networks.
+**NetPractice** is a networking project in the **42 curriculum**. It introduces the fundamentals of TCP/IP networking through **10 interactive exercises**. Each level presents a small network with incorrect or incomplete settings. The objective is to make the required devices communicate by configuring IPv4 addresses, subnet masks, gateways, and routing tables.
 
-The project consists of **10 levels**. Each level presents a network diagram with one or more connectivity goals. To make the network work, the student must configure IP addresses, subnet masks, default gateways, and routing tables, then verify that packets can reach their destinations and return correctly.
+The exercises run in a browser-based simulator: no physical network equipment, packet capture, or application compilation is required. As the levels become more complex, they introduce multiple hosts, switches, routers, separate subnets, routes between routers, and simulated Internet connectivity.
 
-The main topics covered are IPv4 addressing, CIDR notation, subnetting, network and broadcast addresses, switches, routers, directly connected networks, static routes, and default routes.
+### Learning objectives
+
+By completing this project, the student learns to:
+
+- Read a network diagram and distinguish hosts, switches, routers, and interfaces.
+- Understand IPv4 addressing and the TCP/IP model.
+- Convert subnet masks between dotted-decimal notation and CIDR prefixes.
+- Calculate network addresses, broadcast addresses, and valid host ranges.
+- Divide an address block into non-overlapping subnets.
+- Identify whether two interfaces share the same subnet.
+- Configure default gateways and static routes, including a return path.
+- Diagnose connectivity errors by following a packet hop by hop.
+- Export and submit the configuration of every completed level.
 
 ## Instructions
 
+### Prerequisites
+
+- A computer with a modern web browser.
+- The NetPractice training archive supplied on the **42 Intra** project page.
+- A terminal to extract the archive and, if available in your package, launch its local server.
+- Your **42 Intra login**.
+
+**There is nothing to compile.** NetPractice provides an interactive training interface, not a program that must be built from source.
+
 ### Launch the training interface
 
-No compilation is needed: NetPractice runs in a web browser.
-
-1. Download the NetPractice archive provided on the project's page in the **42 Intra**.
-2. Extract the archive into a directory of your choice, for example:
+1. Download the NetPractice archive attached to the project on the 42 Intra.
+2. Extract it into a working directory. For a `.tgz` archive, for example:
 
    ```bash
    tar -xzf net_practice*.tgz
    ```
 
-3. Open a terminal in the extracted directory. If the package includes `run.sh`, start the interface with:
+3. Navigate to the extracted directory containing the provided launcher or web files.
+4. **If your version includes `run.sh`**, start the training interface with:
 
    ```bash
    ./run.sh
    ```
 
-   Depending on the version provided, opening `index.html` in a browser may also be supported.
+   The script starts the local training interface; open the browser address indicated by the launcher if it does not open automatically. If your version instead provides a standalone `index.html`, open that file in your browser, following the instructions bundled with your archive.
 
-4. Enter your **42 Intra login** in the training interface to access your exercises.
+5. Enter **your own 42 Intra login** in the interface to work on your exercises.
 
-### Solve and export each level
+> The exact archive name and launch method can vary with the version distributed on the Intra. Use the files and instructions included in your own package.
 
-1. Read the connectivity objectives shown in the network diagram.
-2. Edit the available IP addresses, subnet masks, gateways, and routes.
-3. Click **Check again** to validate the configuration.
-4. If a goal fails, inspect the logs and check both the forward path and the return path.
-5. Once the level is solved, click **Get my config** to export its configuration.
-6. Save the exported file, then move to the next level. Repeat for all **10 levels**.
+### Complete and export a level
 
-### Submission
+1. Open a level and read **every connectivity goal** shown above the diagram.
+2. Identify which values are editable and which values are fixed.
+3. Determine the subnet of each interface, then correct IP addresses and subnet masks.
+4. Configure the hosts' gateways and the routers' routing tables as necessary.
+5. Select **Check again** to test whether all required paths work.
+6. Read the simulator's logs if a goal fails; verify both the **forward path** and the **return path**.
+7. When the configuration is correct, select **Get my config** to download the exported configuration file.
+8. Keep that file, proceed to the next level, and repeat until all **10 levels** have been exported.
 
-Submit your work through the project's Git repository. The **repository root** must contain:
+**Important:** Export each completed level before moving on. Do not submit screenshots in place of the exported configuration files.
 
-- `README.md`
-- **10 exported configuration files, one for each level** (typically `level1.json` through `level10.json`, depending on the training interface version).
+### Submission requirements
 
-Keep the exported configuration files in the repository root, not in a subdirectory. Use the files generated by **Get my config**, and confirm that they match the 10 completed levels. Follow any additional submission or evaluation instructions in the current project subject.
+The **root of the Git repository** must contain:
+
+- This `README.md` file.
+- **Exactly 10 exported configuration files for the 10 levels (one file per level)**, generated by **Get my config**.
+
+For illustration, a repository may look like this if the interface exports JSON files with these names:
+
+```text
+NetPractice/
+├── README.md
+├── level1.json
+├── level2.json
+├── level3.json
+├── level4.json
+├── level5.json
+├── level6.json
+├── level7.json
+├── level8.json
+├── level9.json
+└── level10.json
+```
+
+The filenames in this tree are **examples**; keep the names and formats produced by your version of the simulator unless your subject specifies otherwise. **Do not place the 10 files in a subdirectory.** The downloaded training archive and `run.sh` are used locally and are not part of the required submission unless the current subject explicitly asks for them.
+
+Before submitting, verify that all 10 files belong to your training session, correspond to the correct levels, and were exported after the goals passed. Follow the latest subject and evaluation instructions available on the 42 Intra.
+
+## Networking concepts studied
+
+This section explains the main concepts needed to understand and solve the NetPractice exercises.
+
+### 1. Computer networks and TCP/IP
+
+A **computer network** is a group of connected devices that exchange data. A **host** is an endpoint such as a computer or server. A **network interface** is the connection through which the host or router participates in a network.
+
+**TCP/IP** is the suite of protocols used to communicate across local networks and the Internet. In simplified terms:
+
+- **IP (Internet Protocol)** provides logical addressing and allows packets to be forwarded between networks; it does not guarantee delivery by itself.
+- **TCP (Transmission Control Protocol)** provides reliable, ordered byte-stream communication for applications that need it.
+- **UDP (User Datagram Protocol)** sends datagrams without TCP's connection and reliability mechanisms.
+
+NetPractice focuses on **IPv4 addressing and packet routing** rather than implementing TCP or UDP.
+
+### 2. OSI and TCP/IP layers
+
+The **OSI model** is a conceptual reference that divides networking into seven layers. The TCP/IP model groups related functions into a smaller number of layers.
+
+| OSI layer | Role | Example |
+| --- | --- | --- |
+| 7 — Application | Services used by applications | HTTP, DNS |
+| 6 — Presentation | Data representation/encoding | Serialization, encoding |
+| 5 — Session | Session management | Session control concepts |
+| 4 — Transport | End-to-end transport | TCP, UDP |
+| 3 — Network | Logical addressing and routing | IPv4, routers |
+| 2 — Data Link | Local frame delivery | Ethernet, MAC, switches |
+| 1 — Physical | Transmission of signals | Cables, radio, electrical signals |
+
+**Most NetPractice problems involve OSI Layer 3 (IP and routing), with Layer 2 (local switching) as essential context.**
+
+### 3. IPv4 addresses
+
+An **IPv4 address** is a 32-bit value normally written as four decimal octets, each from `0` to `255`, for example:
+
+```text
+192.168.1.10
+```
+
+Its binary representation is:
+
+```text
+11000000.10101000.00000001.00001010
+```
+
+The address is assigned to an **interface**, not inherently to an entire machine. A router generally has different IP addresses on its different interfaces because each interface connects to a network.
+
+An IPv4 address must be interpreted together with a **subnet mask**: the same address can belong to different-sized networks depending on its prefix length.
+
+#### Private IPv4 address ranges
+
+These address blocks are reserved for private networks:
+
+| Block | Address range |
+| --- | --- |
+| `10.0.0.0/8` | `10.0.0.0`–`10.255.255.255` |
+| `172.16.0.0/12` | `172.16.0.0`–`172.31.255.255` |
+| `192.168.0.0/16` | `192.168.0.0`–`192.168.255.255` |
+
+Private addresses are not routed directly over the public Internet. Many real networks use **NAT (Network Address Translation)** to connect privately addressed hosts to the Internet; configuring NAT is not a central task in NetPractice.
+
+### 4. Subnet masks and CIDR notation
+
+A **subnet mask** separates the network bits from the host bits of an IPv4 address. In binary, subnet masks contain consecutive `1` bits followed by consecutive `0` bits.
+
+For example:
+
+```text
+Mask: 255.255.255.192
+      11111111.11111111.11111111.11000000
+```
+
+There are **26 consecutive `1` bits**, so the mask can be written as `/26`. This short format is called **CIDR (Classless Inter-Domain Routing) notation**.
+
+In `192.168.1.70/26`, 26 bits identify the network and the remaining 6 bits identify addresses within that subnet.
+
+#### Common subnet masks
+
+| CIDR | Subnet mask | Total addresses | Usable host addresses* |
+| --- | --- | ---: | ---: |
+| `/24` | `255.255.255.0` | 256 | 254 |
+| `/25` | `255.255.255.128` | 128 | 126 |
+| `/26` | `255.255.255.192` | 64 | 62 |
+| `/27` | `255.255.255.224` | 32 | 30 |
+| `/28` | `255.255.255.240` | 16 | 14 |
+| `/29` | `255.255.255.248` | 8 | 6 |
+| `/30` | `255.255.255.252` | 4 | 2 |
+| `/32` | `255.255.255.255` | 1 | One specific IP/host route |
+
+\*For conventional IPv4 subnets from `/0` to `/30`, usable host count is `2^(32 - prefix) - 2` because the network and broadcast addresses are reserved. `/31` and `/32` are special cases and do not use this subtraction in the same way.
+
+### 5. Network address, broadcast address, and host range
+
+For a conventional IPv4 subnet:
+
+- **Network address:** the first address; identifies the subnet.
+- **Broadcast address:** the last address; used to reach all hosts on that subnet.
+- **Usable host addresses:** the addresses between network and broadcast that can normally be assigned to interfaces.
+
+Example: `192.168.1.64/26`
+
+```text
+Network address:         192.168.1.64
+First usable address:    192.168.1.65
+Last usable address:     192.168.1.126
+Broadcast address:       192.168.1.127
+Total addresses:         64
+Usable host addresses:   62
+```
+
+**Do not assign the network or broadcast address to a normal host interface in these conventional subnets.** A route can mathematically match those addresses even though they are not normal unicast host addresses.
+
+### 6. Calculating subnets: the block-size method
+
+When the mask changes in the last octet, a quick way to find subnet boundaries is:
+
+```text
+Block size = 256 - mask value in the changing octet
+```
+
+For `/26`, the last mask octet is `192`:
+
+```text
+256 - 192 = 64
+```
+
+Therefore, within `192.168.1.0/24`, the `/26` network boundaries occur every 64 addresses:
+
+| Subnet | Full range | Usable range |
+| --- | --- | --- |
+| `192.168.1.0/26` | `.0`–`.63` | `.1`–`.62` |
+| `192.168.1.64/26` | `.64`–`.127` | `.65`–`.126` |
+| `192.168.1.128/26` | `.128`–`.191` | `.129`–`.190` |
+| `192.168.1.192/26` | `.192`–`.255` | `.193`–`.254` |
+
+Thus, `192.168.1.70/26` belongs to **`192.168.1.64/26`**. The general calculation uses a **bitwise AND** between the IP address and the subnet mask; the block-size method is a shortcut that works for the octet where the mask changes.
+
+### 7. Subnetting and overlapping networks
+
+**Subnetting** divides a larger network into smaller subnets, allowing separate network segments to be addressed without wasting an entire large block for each segment.
+
+For instance, a `/24` can be divided into two `/25` networks, four `/26` networks, or other valid combinations of non-overlapping blocks.
+
+Two subnets **overlap** when their address ranges intersect. This often causes errors when two independent router interfaces are configured for overlapping networks.
+
+Example:
+
+```text
+192.168.1.192/26  -> 192.168.1.192–192.168.1.255
+192.168.1.252/30  -> 192.168.1.252–192.168.1.255
+```
+
+The `/30` is contained within the `/26`, so these networks overlap. To avoid this, the first segment could instead use `192.168.1.192/27` (`.192`–`.223`), leaving the `/30` separate.
+
+**Check all subnet ranges in the topology**, including router-to-router links, not only the networks containing PCs.
+
+### 8. Switches, MAC addresses, and ARP
+
+A **switch** connects devices on a local Ethernet network and forwards **frames** mainly by using **MAC addresses** (OSI Layer 2). It does not normally act as an IPv4 router between subnets.
+
+A **MAC address** identifies a network interface at the link layer. In IPv4 over Ethernet, **ARP (Address Resolution Protocol)** helps a device discover the MAC address associated with a local next-hop IPv4 address.
+
+- If the destination is on the same subnet, the sender can transmit to the destination over the local network.
+- If the destination is on another subnet, the sender generally transmits to its router's local MAC address, while the **IP packet retains the remote destination IP**.
+
+The NetPractice simulator abstracts away most Ethernet and ARP details, but the distinction between **same-subnet communication** and **routing between subnets** is fundamental.
+
+### 9. Routers and directly connected networks
+
+A **router** connects different IP networks and forwards packets based on the destination IP address and its routing table (OSI Layer 3).
+
+For example, a router with interfaces `192.168.1.1/24` and `192.168.2.1/24` can reach both `192.168.1.0/24` and `192.168.2.0/24` because they are **directly connected**.
+
+Routers generally know their directly connected networks automatically. Reaching a **remote network** behind another router requires an appropriate route, either manually configured (a **static route**) or learned through a routing protocol. NetPractice focuses on static routing.
+
+### 10. Default gateways
+
+A **default gateway** is the next-hop router used by a host for destinations outside its local subnet, provided no more specific route applies.
+
+Example:
+
+```text
+Host IP:          192.168.1.10/24
+Host network:     192.168.1.0/24
+Router interface: 192.168.1.1/24
+Default gateway:  192.168.1.1
+```
+
+The gateway must be **reachable from the sending host**, normally through the host's local subnet. In this example, `192.168.2.1` is not a suitable directly reachable default gateway for `192.168.1.10/24`.
+
+### 11. Routing tables, destinations, and next hops
+
+A **routing table** tells a device how to send a packet toward a destination. In NetPractice, an entry generally has two parts:
+
+```text
+Destination: 192.168.2.0/24
+Gateway:     10.0.0.2
+```
+
+This means: **for an IP destination inside `192.168.2.0/24`, send the packet to the next-hop router `10.0.0.2`.**
+
+- **Destination (prefix):** the IP range matched by the route.
+- **Gateway / next hop:** where to send a matching packet next.
+
+The gateway is **not necessarily the destination host's IP**. It is usually an address on a neighboring router, and it must be reachable by the router using the route.
+
+A route to `160.11.102.0/30` matches `.0` through `.3`, while `160.11.102.0/32` matches **only `160.11.102.0`**. A `/32` route is a **host route**, useful for targeting one specific IPv4 address.
+
+### 12. Default routes and longest-prefix matching
+
+The prefix **`0.0.0.0/0`** matches every IPv4 address and is called the **default route**. It is the fallback when no more specific matching route exists.
+
+Example:
+
+```text
+Destination: 0.0.0.0/0
+Gateway:     192.168.1.1
+```
+
+If several entries match, IPv4 forwarding uses **longest-prefix matching**: the most specific matching prefix wins.
+
+Example table:
+
+| Destination | Next hop |
+| --- | --- |
+| `0.0.0.0/0` | `10.0.0.1` |
+| `192.168.2.0/24` | `10.0.0.2` |
+| `192.168.2.64/26` | `10.0.0.3` |
+| `192.168.2.70/32` | `10.0.0.4` |
+
+A packet addressed to `192.168.2.70` uses `10.0.0.4` (`/32` is most specific); one addressed to `192.168.2.80` uses `10.0.0.3` (`/26` is most specific).
+
+### 13. Static routes and the return path
+
+Consider two routers connecting two local networks:
+
+```text
+Host A: 192.168.1.10/24
+          |
+     192.168.1.1
+         [R1]
+       10.0.0.1/30
+          |
+       10.0.0.2/30
+         [R2]
+     192.168.2.1
+          |
+Host B: 192.168.2.20/24
+```
+
+The router-to-router link is `10.0.0.0/30`, with usable addresses `10.0.0.1` and `10.0.0.2`.
+
+Configure the hosts' default gateways:
+
+```text
+Host A default gateway: 192.168.1.1
+Host B default gateway: 192.168.2.1
+```
+
+Add one static route on **each** router:
+
+```text
+R1: 192.168.2.0/24  -> 10.0.0.2
+R2: 192.168.1.0/24  -> 10.0.0.1
+```
+
+The forwarding path becomes:
+
+```text
+A -> R1 -> R2 -> B
+```
+
+But a successful two-way exchange also needs the **return path**:
+
+```text
+B -> R2 -> R1 -> A
+```
+
+A frequent NetPractice mistake is to configure the forward route while forgetting the reverse route. The destination may be reachable in one direction, yet the communication still fails because the reply cannot return.
+
+### 14. Route aggregation (summarization)
+
+**Route aggregation** represents multiple smaller subnets with one larger prefix when they are reachable through the same next hop.
+
+For example, these non-overlapping networks all fit inside `192.168.1.0/24`:
+
+```text
+192.168.1.0/25
+192.168.1.128/26
+192.168.1.192/27
+192.168.1.252/30
+```
+
+An upstream router may use:
+
+```text
+Destination: 192.168.1.0/24
+Gateway:     <router-reachable-through-this-link>
+```
+
+This is useful when an Internet-side interface has space for only one return route. **Aggregation does not create missing routes** inside the downstream network: the receiving router must still know how to reach each individual subnet.
+
+### 15. Troubleshooting packet delivery
+
+Use this checklist when **Check again** reports an error:
+
+1. **Topology:** Which devices and interfaces share a physical/link-layer segment?
+2. **Address validity:** Are IPs unique on their network? Is an address accidentally used as network or broadcast?
+3. **Subnet membership:** Do devices on the same local segment have compatible IPs and masks?
+4. **Overlaps:** Does a subnet overlap another independently connected subnet?
+5. **Host gateway:** Is the configured next hop actually reachable from the host?
+6. **Router routes:** For each remote subnet, which next-hop router should receive the packet?
+7. **Longest-prefix match:** Is a more specific route overriding the route you intended to use?
+8. **Forward direction:** Trace every hop from source to destination.
+9. **Reverse direction:** Trace every hop back from destination to source.
+10. **Routing loops:** Could two default routes send an unknown packet back and forth?
+
+A successful configuration must satisfy **every goal** displayed in the level, not merely one connection. The simulator logs are useful because they show where the simulated packet delivery fails.
+
+### 16. Quick reference for common NetPractice tasks
+
+| Situation | What to check |
+| --- | --- |
+| Two hosts on one switch cannot communicate | Same subnet, compatible masks, unique usable IPs |
+| A host cannot reach a remote subnet | Local gateway and onward router route |
+| Two routers cannot reach one another | IPs and masks on their shared segment |
+| Forward path works but reply fails | Return route and destination host's gateway |
+| A route matches the wrong hosts | Network address, prefix length, longest-prefix match |
+| Two networks unexpectedly conflict | Overlapping address intervals |
+| Internet cannot reply to several internal networks | Correct return route, possibly a valid aggregated prefix |
+| Packet is passed repeatedly between routers | Routing loop, often caused by conflicting defaults |
 
 ## Resources
 
-### Networking concepts studied
+### Official standards and documentation
 
-- **TCP/IP and IPv4 addressing:** IP addresses, network portions, host portions, and packet delivery.
-- **Subnet masks and CIDR:** prefix lengths such as `/24`, `/26`, and `/30`; subnet ranges; network and broadcast addresses.
-- **Default gateways:** how hosts send traffic outside their local subnet.
-- **Routers and routing tables:** directly connected networks, static routes, next hops, default routes (`0.0.0.0/0`), and longest-prefix matching.
-- **Switches:** local network communication and the role of MAC addresses.
-- **OSI layers:** especially Layer 2 (Data Link) and Layer 3 (Network).
-- **Troubleshooting:** identifying incorrect addresses, overlapping subnets, missing routes, and failed return paths.
+- [RFC 791 — Internet Protocol](https://www.rfc-editor.org/rfc/rfc791): IPv4 packets and addressing.
+- [RFC 950 — Internet Standard Subnetting Procedure](https://www.rfc-editor.org/rfc/rfc950): historical foundations of subnet masks and subnetting.
+- [RFC 1918 — Address Allocation for Private Internets](https://www.rfc-editor.org/rfc/rfc1918): private IPv4 ranges.
+- [RFC 4632 — Classless Inter-domain Routing (CIDR)](https://www.rfc-editor.org/rfc/rfc4632): prefix notation and address aggregation.
+- [RFC 1812 — Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812): IPv4 routing and forwarding behavior.
+- [RFC 826 — An Ethernet Address Resolution Protocol](https://www.rfc-editor.org/rfc/rfc826): ARP and local address resolution.
+- [Cisco Networking Academy](https://www.netacad.com/): learning material on IP addressing, subnetting, switching, and routing.
+- **The NetPractice subject on the 42 Intra**: authoritative reference for the version assigned to the student, its export procedure, and evaluation/submission rules.
 
-### References
+### How AI was used
 
-- [RFC 791 — Internet Protocol (IPv4)](https://www.rfc-editor.org/rfc/rfc791)
-- [RFC 1918 — Address Allocation for Private Internets](https://www.rfc-editor.org/rfc/rfc1918)
-- [RFC 4632 — Classless Inter-domain Routing (CIDR)](https://www.rfc-editor.org/rfc/rfc4632)
-- [RFC 1812 — Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812)
-- [Cisco Networking Academy](https://www.netacad.com/)
-- **NetPractice project subject**, available on the 42 Intra.
+**ChatGPT (OpenAI)** was used as a **study and documentation assistant** for the following tasks:
 
-### AI usage
+- **Understanding theory:** explanations of IPv4, subnet masks, CIDR, subnet ranges, network/broadcast addresses, switches, routers, gateways, OSI layers, and static/default routing.
+- **Practising calculations:** worked examples to check prefix conversions, `/25`–`/32` address coverage, and subnet boundaries.
+- **Troubleshooting support:** discussing why routes may fail, including overlapping subnets, next-hop selection, aggregation, and missing return paths in complex NetPractice exercises.
+- **README writing:** organizing and drafting the English explanations, instructions, examples, and resource list in this document.
 
-ChatGPT was used as a **learning and writing aid** to clarify networking concepts (including subnetting, CIDR, gateways, and routing), discuss troubleshooting approaches for NetPractice exercises, and help structure and draft this README. The project configuration files are exported from the NetPractice training interface and must be checked there against each level's goals.
+AI-generated explanations and suggestions must be **reviewed against the project simulator and reliable networking references**. The **10 submitted configuration files** are the configurations exported from the NetPractice interface after completing and checking the corresponding levels; this README does not replace those files.
+
+## Final checklist
+
+- [ ] Replace `YOUR_LOGIN` in the first line with your actual 42 login.
+- [ ] Complete all 10 exercises with your own login in the training interface.
+- [ ] Verify that every required goal passes using **Check again**.
+- [ ] Export every level with **Get my config**.
+- [ ] Place all **10 exported configuration files directly at the repository root**.
+- [ ] Keep `README.md` at the repository root.
+- [ ] Check your repository against the latest NetPractice subject before submitting.
